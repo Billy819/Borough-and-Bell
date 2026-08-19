@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Borough &amp; Bell — Greater London Focus Chronometer</title>
+<meta name="description" content="A London-themed focus timer on a 60/10/40 rhythm. Every hour of focused work restores another London borough to the map — 33 hours, 33 boroughs.">
+<meta name="theme-color" content="#21386B">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/hammersmith-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/karla-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-mode="focus">
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img class="crest" src="assets/logo.png" alt="Arms of the London County Council">
+      <span class="wordmark">
+        <span class="wm-main">Borough <i>&amp;</i> Bell</span>
+        <span class="wm-sub">Greater London Focus Chronometer</span>
+      </span>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-timer"  aria-controls="view-timer"  aria-selected="true">Sitting</button>
+      <button class="tab" role="tab" id="tab-map"    aria-controls="view-map"    aria-selected="false">The Map</button>
+      <button class="tab" role="tab" id="tab-plaque" aria-controls="view-plaque" aria-selected="false">Boroughs</button>
+      <button class="tab" role="tab" id="tab-report" aria-controls="view-report" aria-selected="false">The Report</button>
+      <button class="tab" role="tab" id="tab-guide"  aria-controls="view-guide"  aria-selected="false">Guidance</button>
+    </nav>
+
+    <div class="bar-right">
+      <div class="hours-chip" title="Hours of focused work completed">
+        <b id="chipHours">0.0</b><span>/ 33 h</span>
+      </div>
+      <button class="icon-btn" id="btnSettings" aria-label="Open settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VIEW: TIMER ============ -->
+<section class="view is-on" id="view-timer" role="tabpanel" aria-labelledby="tab-timer">
+  <div class="clock-wrap">
+    <div class="clock-card">
+      <div class="mode-switch" role="tablist" aria-label="Timer mode">
+        <button class="mode-btn" role="tab" data-mode="focus" aria-selected="true">Sitting</button>
+        <button class="mode-btn" role="tab" data-mode="short" aria-selected="false">Short Break</button>
+        <button class="mode-btn" role="tab" data-mode="long"  aria-selected="false">Long Break</button>
+      </div>
+
+      <div class="dial" id="dial">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="track" cx="100" cy="100" r="92"/>
+          <circle class="prog" id="ring" cx="100" cy="100" r="92"
+                  stroke-dasharray="578.05" stroke-dashoffset="0"/>
+        </svg>
+        <div class="dial-face">
+          <div class="digits" id="digits" role="timer" aria-live="off">60:00</div>
+          <div class="dial-label" id="dialLabel">Ready</div>
+        </div>
+      </div>
+
+      <button class="start-btn" id="btnStart">Start</button>
+
+      <div class="clock-tools">
+        <button class="ghost-btn" id="btnReset" title="Set this session back to the start">Reset</button>
+        <button class="ghost-btn" id="btnSkip" title="Finish this session and move to the next">Skip</button>
+      </div>
+
+      <p class="clock-note" id="clockNote">Sitting <b>1</b> of 4 · a long break follows the last</p>
+    </div>
+
+    <!-- Campaign progress: the Thames, barry wavy, after the LCC arms -->
+    <div class="thames">
+      <div class="thames-top">
+        <span>Greater London restored</span>
+        <span><b id="thamesCount">0</b> of 33 boroughs</span>
+      </div>
+      <div class="thames-bed">
+        <div class="thames-fill" id="thamesFill">
+          <svg viewBox="0 0 520 34" preserveAspectRatio="none" aria-hidden="true">
+            <rect width="520" height="34" fill="#2F6FC0"/>
+            <path d="M0 7q26 -6 52 0t52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0V0H0Z" fill="#F3EEE2" opacity=".9"/>
+            <path d="M0 18q26 -6 52 0t52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0v-6q-26 6 -52 0t-52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0Z" fill="#F3EEE2" opacity=".9"/>
+            <path d="M0 29q26 -6 52 0t52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0 52 0v-6q-26 6 -52 0t-52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0 -52 0Z" fill="#F3EEE2" opacity=".9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="thames-scale"><span>0 h</span><span>16&#189; h</span><span>33 h</span></div>
+    </div>
+
+    <!-- Task list -->
+    <div class="tasks">
+      <div class="tasks-head">
+        <h3>Today's List</h3>
+        <button class="ghost-btn" id="btnClearDone">Clear finished</button>
+      </div>
+      <div id="taskList"></div>
+      <button class="task-add" id="btnAddTask">+ Add a task</button>
+      <div class="task-form" id="taskForm">
+        <input type="text" id="taskName" placeholder="What are you working on?" maxlength="120" autocomplete="off">
+        <label class="fld" for="taskEst">Sittings needed
+          <input type="number" id="taskEst" min="1" max="20" value="1">
+        </label>
+        <div style="margin-left:auto; display:flex; gap:.5rem;">
+          <button class="btn btn-quiet" id="btnTaskCancel">Cancel</button>
+          <button class="btn" id="btnTaskSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW: MAP ============ -->
+<section class="view" id="view-map" role="tabpanel" aria-labelledby="tab-map" hidden>
+  <div class="view-head">
+    <div class="eyebrow">Greater London</div>
+    <h2>The Map</h2>
+    <p>Tap any borough to read about it. Boroughs you have restored are filled in with the colour of their planning region; the rest stay grey until you earn them.</p>
+  </div>
+
+  <div class="map-layout">
+    <div>
+      <div class="panel map-box" id="mapBox">
+        <div class="map-tip" id="mapTip" aria-hidden="true"></div>
+        <!-- SVG injected by app.js -->
+      </div>
+      <div class="map-key" id="mapKey"></div>
+    </div>
+    <div class="panel detail" id="detail">
+      <div class="detail-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        <p>Choose a borough on the map to see its photographs and story.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW: PLAQUES ============ -->
+<section class="view" id="view-plaque" role="tabpanel" aria-labelledby="tab-plaque" hidden>
+  <div class="view-head">
+    <div class="eyebrow">The Roll of Boroughs</div>
+    <h2>Boroughs</h2>
+    <p>One hour of focused work mounts one blue plaque — thirty-three hours, thirty-three boroughs. They are listed in the order you will earn them, starting at the ancient centre and working outwards.</p>
+    <p class="plaque-count" id="plaqueCount"></p>
+  </div>
+  <div class="plaque-grid" id="plaqueGrid"></div>
+</section>
+
+<!-- ============ VIEW: REPORT ============ -->
+<section class="view" id="view-report" role="tabpanel" aria-labelledby="tab-report" hidden>
+  <div class="view-head">
+    <div class="eyebrow">County Hall</div>
+    <h2>The Report</h2>
+    <p>The state of the capital, measured against your hours. Every sitting you finish lifts these figures a little further.</p>
+  </div>
+  <div class="stat-grid" id="statGrid"></div>
+  <div class="view-head" style="margin-top:.4rem">
+    <div class="eyebrow">London Plan</div>
+    <h2>Planning Regions</h2>
+    <p>London is administered in five sub-regions. Each one is complete when all of its boroughs are restored.</p>
+  </div>
+  <div class="region-grid" id="regionGrid"></div>
+</section>
+
+<!-- ============ VIEW: GUIDANCE ============ -->
+<section class="view" id="view-guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+  <div class="view-head">
+    <div class="eyebrow">Start here</div>
+    <h2>Guidance</h2>
+    <p>Everything you need to know, in plain English. You do not have to read it all — the first two cards are enough to begin.</p>
+  </div>
+
+  <div class="guide">
+    <div class="panel guide-card">
+      <h3>What this is</h3>
+      <p>This is a timer that helps you work or study in long, calm blocks instead of endless scattered minutes. You work for one hour, you rest for ten minutes, and after four hours you take a proper forty-minute break.</p>
+      <p>While you work, something else is happening. London is being put back together. Every hour you finish restores one borough to the map, and lifts the city's health, safety, schools and economy. One hour, one borough — thirty-three hours brings the whole capital home.</p>
+      <p>It is a small game, but the work is real. That is the point.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>How to begin</h3>
+      <ol>
+        <li>Go to the <b>Sitting</b> tab.</li>
+        <li>Add one task — just one. Write what you will actually do, not what you hope to do.</li>
+        <li>Press <b>Start</b> and put your phone somewhere you cannot reach it.</li>
+        <li>When the bell rings, stop. Stand up, look out of a window, drink some water.</li>
+        <li>Press <b>Start</b> again for the break, then again for the next hour.</li>
+      </ol>
+      <p>That is the whole thing. There is nothing else to learn.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>The rhythm: 60 / 10 / 40</h3>
+      <div class="rhythm">
+        <div class="rhythm-cell"><b>60</b><span>Minutes · Sitting</span><em>One hour of proper work on one task.</em></div>
+        <div class="rhythm-cell"><b>10</b><span>Minutes · Short break</span><em>Get up and move. Away from the screen.</em></div>
+        <div class="rhythm-cell"><b>40</b><span>Minutes · Long break</span><em>After four sittings. Eat, walk, rest properly.</em></div>
+      </div>
+      <p>An hour is longer than the usual twenty-five-minute Pomodoro, and that is deliberate. Deep work — reading, writing, revision, coding — needs a long runway. The first fifteen minutes are usually the hardest. Stay in the chair and it gets easier.</p>
+      <p>If an hour feels too long today, that is completely fine. Open <b>Settings</b> and change it to whatever you can honestly do. Forty minutes you actually finish beats sixty minutes you abandon.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>How the game works</h3>
+      <ul>
+        <li><b>One hour = one borough.</b> Each one arrives as a blue plaque, the same kind you see on London walls.</li>
+        <li><b>Boroughs come in order</b>, starting with the City of London and Westminster, then working outwards through East, North, South and West London.</li>
+        <li><b>Five planning regions</b> complete as you go. Central London finishes at 8 hours; the last borough, Hillingdon, arrives at 33.</li>
+        <li><b>Eight measures rise</b> as you work — human development, quality of life, healthcare, safety, education, tourism, population and GDP. Watch them on <b>The Report</b>.</li>
+        <li><b>At 33 hours the game ends</b> and London stands as the finest city in the world. You will have done thirty-three hours of real work to get there.</li>
+      </ul>
+      <p>Time counts while the timer is running in a sitting. Breaks do not count towards boroughs, and neither does a paused timer.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>Will the timer keep time if I look away?</h3>
+      <p>Yes. The timer does not count seconds one by one — it remembers the exact clock time your session should end and checks the real clock constantly. It also runs on a background worker thread, so it keeps ticking when the tab is hidden.</p>
+      <p>You can switch tabs, minimise the window, lock your phone, or close the browser entirely and come back later. When you return, the timer will show the true remaining time, and your hours will be counted correctly. Nothing drifts and nothing is lost.</p>
+      <p>Turn on desktop notifications in <b>Settings</b> and your computer will tell you when the bell rings even if this tab is buried behind others.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>Words to work by</h3>
+      <p>Rudyard Kipling's poem <i>If—</i>, read by Sir Michael Caine, who was born in Rotherhithe and grew up in the Elephant and Castle. It is a poem about keeping your head, holding your nerve, and filling the minute with sixty seconds' worth of work. Four minutes well spent before a hard session.</p>
+      <div class="video-frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/sqOgyNfHl1U?rel=0"
+                title="If by Rudyard Kipling, read by Sir Michael Caine"
+                loading="lazy" allowfullscreen
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <p style="font-size:.84rem;color:var(--stone-3);margin:0">Loaded through youtube-nocookie.com, so YouTube sets no tracking cookies unless you press play.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>If you are struggling today</h3>
+      <ul>
+        <li><b>Start absurdly small.</b> Set the timer to ten minutes. Ten real minutes is worth more than a perfect plan you never begin.</li>
+        <li><b>One task, not five.</b> Pick the single thing that matters most and mark it active. The rest can wait an hour.</li>
+        <li><b>A broken streak is not a failure.</b> Your hours never reset on their own. The boroughs you have earned stay earned. Come back whenever you are ready and carry on from exactly where you stopped.</li>
+        <li><b>Take the long break properly.</b> Forty minutes away from the desk is not laziness. It is what makes the next four hours possible.</li>
+        <li><b>Tired is not the same as lazy.</b> If you have not slept or eaten, fix that first. The work will still be here.</li>
+      </ul>
+      <p>Thirty-three hours is closer than it sounds. It is one hour a day for a month, or three hours a day for a fortnight — and a borough lands at the end of every single hour. You are never more than one sitting from the next one.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>Keyboard shortcuts</h3>
+      <ul>
+        <li><b>Space</b> — start or pause the timer</li>
+        <li><b>R</b> — reset the current session</li>
+        <li><b>S</b> — skip to the next session</li>
+        <li><b>1 2 3</b> — switch to sitting, short break, long break</li>
+        <li><b>Esc</b> — close any open panel</li>
+      </ul>
+      <p style="margin-bottom:0">Shortcuts are off while you are typing in a box.</p>
+    </div>
+
+    <div class="panel guide-card">
+      <h3>Where your progress is kept</h3>
+      <p>Everything is saved in your own browser on this device. Nothing is uploaded, there is no account, and no one else can see it. Clearing your browser data — or opening the site in private browsing — will clear your hours too.</p>
+      <p style="margin-bottom:0">You can wipe everything deliberately from <b>Settings → Start again</b>. That cannot be undone, so it asks first.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ SETTINGS ============ -->
+<div class="veil" id="veilSettings" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="setTitle">Settings</h3>
+      <button class="icon-btn" data-close aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+
+      <div class="set-group">
+        <h4>Session lengths</h4>
+        <div class="set-row">
+          <span class="set-label">Sitting<small>Your block of focused work</small></span>
+          <div class="stepper" data-step="focus">
+            <button type="button" data-dir="-1" aria-label="Decrease sitting length">&minus;</button>
+            <input type="number" id="setFocus" min="1" max="180" step="1" inputmode="numeric" aria-label="Sitting length in minutes">
+            <span class="unit">min</span>
+            <button type="button" data-dir="1" aria-label="Increase sitting length">+</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Short break<small>Between sittings</small></span>
+          <div class="stepper" data-step="short">
+            <button type="button" data-dir="-1" aria-label="Decrease short break length">&minus;</button>
+            <input type="number" id="setShort" min="1" max="60" step="1" inputmode="numeric" aria-label="Short break length in minutes">
+            <span class="unit">min</span>
+            <button type="button" data-dir="1" aria-label="Increase short break length">+</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Long break<small>After a full set of sittings</small></span>
+          <div class="stepper" data-step="long">
+            <button type="button" data-dir="-1" aria-label="Decrease long break length">&minus;</button>
+            <input type="number" id="setLong" min="1" max="120" step="1" inputmode="numeric" aria-label="Long break length in minutes">
+            <span class="unit">min</span>
+            <button type="button" data-dir="1" aria-label="Increase long break length">+</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Sittings before a long break</span>
+          <div class="stepper" data-step="every">
+            <button type="button" data-dir="-1" aria-label="Decrease sittings before long break">&minus;</button>
+            <input type="number" id="setEvery" min="1" max="12" step="1" inputmode="numeric" aria-label="Sittings before a long break">
+            <span class="unit">&times;</span>
+            <button type="button" data-dir="1" aria-label="Increase sittings before long break">+</button>
+          </div>
+        </div>
+        <div class="set-row" style="margin-top:.2rem">
+          <span class="set-label" style="font-size:.76rem;color:var(--stone-3)">Quick presets</span>
+          <div class="preset-row">
+            <button class="preset" data-preset="60,10,40,4">60 / 10 / 40</button>
+            <button class="preset" data-preset="50,10,30,4">50 / 10 / 30</button>
+            <button class="preset" data-preset="25,5,15,4">25 / 5 / 15</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h4>Automatic</h4>
+        <div class="set-row">
+          <span class="set-label">Start breaks automatically<small>Roll straight into the break</small></span>
+          <button class="toggle" id="setAutoBreak" role="switch" aria-pressed="false" aria-label="Start breaks automatically"></button>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Start sittings automatically<small>Roll straight back into work</small></span>
+          <button class="toggle" id="setAutoFocus" role="switch" aria-pressed="false" aria-label="Start sittings automatically"></button>
+        </div>
+      </div>
+
+      <div class="set-group">
+        <h4>Bells &amp; alerts</h4>
+        <div class="set-row">
+          <span class="set-label">Play the bells<small>Westminster chimes at the end of a session</small></span>
+          <button class="toggle" id="setSound" role="switch" aria-pressed="true" aria-label="Play the bells"></button>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Volume</span>
+          <input type="range" class="range" id="setVolume" min="0" max="100" step="5" aria-label="Bell volume">
+        </div>
+        <div class="set-row">
+          <span class="set-label">Desktop notifications<small>Useful when this tab is hidden</small></span>
+          <button class="toggle" id="setNotify" role="switch" aria-pressed="false" aria-label="Desktop notifications"></button>
+        </div>
+        <div class="set-row">
+          <span class="set-label">Countdown in the tab title</span>
+          <button class="toggle" id="setTitle2" role="switch" aria-pressed="true" aria-label="Countdown in the tab title"></button>
+        </div>
+        <div class="set-row">
+          <button class="btn btn-quiet" id="btnTestBell">Test the bell</button>
+        </div>
+      </div>
+
+      <div class="set-group" style="margin-bottom:0">
+        <h4>Progress</h4>
+        <div class="set-row">
+          <span class="set-label">Start again<small>Clears every hour, borough and task. This cannot be undone.</small></span>
+          <button class="btn btn-danger" id="btnWipe">Start again</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="sheet-foot">
+      <button class="btn" data-close>Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ UNLOCK ============ -->
+<div class="veil" id="veilUnlock" role="dialog" aria-modal="true" aria-labelledby="unlockName">
+  <div class="sheet unlock-sheet">
+    <div class="sheet-body">
+      <div class="unlock-kicker">Borough restored</div>
+      <div class="unlock-plaque" id="unlockPlaque"></div>
+      <h3 id="unlockName">Borough</h3>
+      <p id="unlockText"></p>
+      <div class="region-done" id="unlockRegion" hidden></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-quiet" data-close>Back to work</button>
+      <button class="btn" id="btnSeeBorough">See it on the map</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VICTORY ============ -->
+<div class="veil victory" id="veilVictory" role="dialog" aria-modal="true" aria-labelledby="vicTitle">
+  <div class="sheet">
+    <img class="vic-hero" src="assets/img/london_hero.jpg" alt="The London skyline" loading="lazy">
+    <div class="vic-body">
+      <img class="vic-crest" src="assets/logo.png" alt="">
+      <div class="eyebrow">33 hours · 33 boroughs · complete</div>
+      <h2 id="vicTitle">London stands first among cities</h2>
+      <p class="vic-lede">Every borough is restored, every region is complete, and the capital leads the world on all eight measures. Thirty-three hours of real work did that. Whatever you were studying or building in those hours is yours to keep.</p>
+      <div class="vic-stats" id="vicStats"></div>
+      <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-quiet" data-close>Close</button>
+        <button class="btn" id="btnVicReport">Read the final report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-rail" id="toastRail" aria-live="polite" aria-atomic="false"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
